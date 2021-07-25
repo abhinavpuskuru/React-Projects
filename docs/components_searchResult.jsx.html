@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/searchResult.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/searchResult.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from "react";
+import { gql, useQuery } from '@apollo/client';  
+ 
+/**
+ * Component responsible for querying GraphQL and retrieving Information to display on to the screen.
+ * searchItem => Has the Data String Entered in the Search Bar
+ * returns => Search Bar along with the data entered in the search bar
+ * @component
+ * @param {string} GET_GIT_TOPICS The seachItem on the screen
+ * Displays all the "topics" related to the term "react" by default, using the GitHub GraphQL API along with the stargazers.
+ * A click on a topic will display the topics related to that topic along with the stargazers count.
+ */
+
+
+const  SearchResult = (props)  => {
+
+  const GET_GIT_TOPICS = gql`
+  query SearchTopics($search: String!) {
+    search(query: $search, type: REPOSITORY, first: 10) {
+      repositoryCount
+      edges {
+        node {
+          ... on Repository {
+            stargazers {
+              totalCount
+            }
+            resourcePath
+            repositoryTopics(first: 10) {
+              totalCount
+              nodes {
+                topic {
+                  name
+                  stargazerCount
+                  relatedTopics {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+    let searchItem = props.value;
+    const [newTopic, setTopic] = useState(searchItem);
+    let search;
+    //initialise the search phrase - whether from user clicking on a topic or key in from navbar top
+    if(searchItem===newTopic){
+      search = `${searchItem} stars:>10000`; //only filter if stargazers are high to prevent junk
+    }else{
+      search = `${newTopic} stars:>10000`;
+      searchItem = newTopic;
+      props.onChange(newTopic);
+    }
+
+    //parsing the search phase into the gql query
+    const { loading, error, data } = useQuery(GET_GIT_TOPICS,
+      {
+        variables: {search}
+      });
+  
+    if (loading){ 
+      return (
+        &lt;div>
+          &lt;i className="fa fa-spinner fa-spin mr-4"/>
+          &lt;span>...Searching for {search}&lt;/span>
+        &lt;/div>
+      );
+    }
+    if (error) return `Error! ${error.message}`; 
+    
+    const displayData = () => {
+      if (data.search.edges.length === 0){ 
+        return (&lt;div> No Data Found for   {searchItem}&lt;/div>)
+      }
+      else {
+        return(&lt;React.Fragment>
+          {data &amp;&amp; data.search.edges &amp;&amp;  data.search.edges.map((edge, index) => (
+            &lt;ul className="list-group"  key={index}>
+              &lt;li className="list-group-item">
+                &lt;div className="d-flex justify-content-between">
+                  &lt;h5>{edge.node.resourcePath}&lt;/h5>
+                  &lt;span className="badge badge-success badge-pill badge-star">&lt;i className="fa fa-star mr-2" aria-hidden="true" />{edge.node.stargazers.totalCount}&lt;/span>
+                &lt;/div>
+                &lt;div>
+                  Related Topics:
+                  {edge.node.repositoryTopics.nodes.map((node,j)=>(
+                    &lt;button key={j}
+                      onClick={() => setTopic(node.topic.name)}
+                    type="button" className="btn btn-outline-info btn-sm mx-1 my-1">{node.topic.name}  &lt;span className="badge badge-light badge-pill">&lt;i className="fa fa-star m1-2" aria-hidden="true" />{node.topic.stargazerCount}&lt;/span>&lt;/button>
+                    ))}
+                &lt;/div>
+              &lt;/li>
+            &lt;/ul>
+          ))}
+        &lt;/React.Fragment>
+        )};
+    }
+    return (
+      displayData()
+    );
+  }
+
+export default SearchResult;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a></li><li><a href="DisplayContent.html">DisplayContent</a></li><li><a href="Header.html">Header</a></li><li><a href="REACT_APP_KEY.html">REACT_APP_KEY</a></li><li><a href="SearchBar.html">SearchBar</a></li><li><a href="SearchResult.html">SearchResult</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Jul 25 2021 16:18:43 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

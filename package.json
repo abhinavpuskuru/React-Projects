@@ -1,0 +1,39 @@
+{
+  "name": "git-hub-topics",
+  "version": "0.2.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/client": "^3.2.2",
+    "better-docs": "^2.3.2",
+    "bootstrap": "^4.5.3",
+    "font-awesome": "^4.7.0",
+    "graphql": "^15.3.0",
+    "jsdoc": "^3.6.7",
+    "optimism": "^0.13.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-router": "5.2.0",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "3.4.3",
+    "subscriptions-transport-ws": "^0.9.18"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "docs": "jsdoc -c jsdoc.conf.json",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
